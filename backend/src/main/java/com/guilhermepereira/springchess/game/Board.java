@@ -9,6 +9,8 @@ public class Board {
 	private static final String fenStringInitialPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	private Square[][] squares = new Square[8][8];
 
+	private PieceSide turnSide;
+
 	public void initialize() {
 		initialize(fenStringInitialPosition);
 	}
@@ -17,6 +19,7 @@ public class Board {
 		String[] stringInfo = fenString.split(" ");
 
 		placePieces(stringInfo[0]);
+		turnSide = stringInfo[1].equals("w") ? PieceSide.WHITE : PieceSide.BLACK;
 	}
 
 	private void placePieces(String piecesPositionString) {
@@ -84,6 +87,10 @@ public class Board {
 		}
 
 		Piece piece = move.getOriginalSquare().getPiece();
+		if (piece.getSide() != turnSide) {
+			return false;
+		}
+
 		List<Square> validMovementSquares = piece.getValidMovementSquares();
 		if (!validMovementSquares.contains(move.getTargetSquare())) {
 			return false;
@@ -91,13 +98,21 @@ public class Board {
 
 		move.getOriginalSquare().setPiece(null);
 		move.getTargetSquare().setPiece(piece);
+
 		piece.setSquare(move.getTargetSquare());
+		piece.setHasMoved(true);
+
+		turnSide = turnSide == PieceSide.WHITE ? PieceSide.BLACK : PieceSide.WHITE;
 
 		return true;
 	}
 
 	public Square getSquare(int row, int column) {
-		return squares[row][column];
+		if (row >= 0 && row < squares.length && column >= 0 && column < squares[0].length) {
+			return squares[row][column];
+		}
+
+		return null;
 	}
 
 	public Square[][] getSquares() {

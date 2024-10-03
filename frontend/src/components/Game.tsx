@@ -7,7 +7,7 @@ import Square from "./Square";
 import MoveModel from "@/models/game/moveModel";
 
 export default function Game(): ReactNode {
-  const [firstClickedSquare, setFirstClickedSquare] = useState<SquareModel | null>(null);
+  const [firstSelectedSquare, setFirstSelectedSquare] = useState<SquareModel | null>(null);
 
   const { isPending, error, data: game }: UseQueryResult<GameModel> = useQuery({
     queryKey: ['game'],
@@ -31,27 +31,36 @@ export default function Game(): ReactNode {
   }
 
   const handleSquareClicked = (square: SquareModel): void => {
-    if (!firstClickedSquare) {
-      setFirstClickedSquare(square);
+    if (!firstSelectedSquare) {
+      if (!square.piece) {
+        return;
+      }
+
+      setFirstSelectedSquare(square);
+      return;
+    }
+
+    if (square == firstSelectedSquare) {
+      setFirstSelectedSquare(null);
       return;
     }
 
     const move: MoveModel = {
-      originalRow: firstClickedSquare.row,
-      originalColumn: firstClickedSquare.column,
+      originalRow: firstSelectedSquare.row,
+      originalColumn: firstSelectedSquare.column,
       targetRow: square.row,
       targetColumn: square.column,
     };
 
     playMoveMutation.mutate(move);
 
-    setFirstClickedSquare(null);
+    setFirstSelectedSquare(null);
   }
 
   return (
     <div className="grid grid-cols-8 grid-rows-8 w-[800px]">
       {game.board.squares.flat().map((square: SquareModel): ReactNode => {
-        return <Square square={square} handleSquareClicked={handleSquareClicked} />
+        return <Square isSquareSelected={square == firstSelectedSquare} square={square} handleSquareClicked={handleSquareClicked} />
       })}
     </div>
   );

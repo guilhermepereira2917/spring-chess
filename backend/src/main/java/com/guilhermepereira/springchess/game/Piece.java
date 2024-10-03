@@ -13,6 +13,7 @@ public abstract class Piece {
 
 	protected final PieceType type;
 	protected final PieceSide side;
+	protected boolean hasMoved = false;
 
 	public Piece(Board board, Square square, PieceType type, PieceSide side) {
 		this.board = board;
@@ -57,5 +58,13 @@ public abstract class Piece {
 
 	public PieceSide getSide() {
 		return side;
+	}
+
+	public boolean getHasMoved() {
+		return hasMoved;
+	}
+
+	public void setHasMoved(boolean hasMoved) {
+		this.hasMoved = hasMoved;
 	}
 }

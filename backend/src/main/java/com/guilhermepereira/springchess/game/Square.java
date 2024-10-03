@@ -11,6 +11,10 @@ public class Square {
 		this.column = column;
 	}
 
+	public boolean hasEnemyPiece(PieceSide side) {
+		return !isEmpty() && piece.getSide() != side;
+	}
+
 	public boolean isEmpty() {
 		return piece == null;
 	}

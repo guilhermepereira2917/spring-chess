@@ -4,6 +4,7 @@ import com.guilhermepereira.springchess.game.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Pawn extends Piece {
 
@@ -13,23 +14,50 @@ public class Pawn extends Piece {
 
 	@Override
 	protected List<Square> getValidMovementSquares() {
-		List<Square> validMovementSquares = new ArrayList<>();
+		return Stream.concat(getNormalMovementSquares().stream(), getCaptureMovementSquares().stream()).toList();
+	}
 
-		int[] direction = isWhite() ? new int[] {-1, 0} : new int[] {1, 0};
+	private List<Square> getNormalMovementSquares() {
+		List<Square> normalMovementSquares = new ArrayList<>();
+
+		int[] direction = getDirection();
 
 		int row = square.getRow();
 		int column = square.getColumn();
 
-		for (int i = 0; i < 2; i++) {
+		int numberOfSquares = hasMoved ? 1 : 2;
+
+		for (int i = 0; i < numberOfSquares; i++) {
 			row += direction[0];
 			column += direction[1];
 
 			Square candidateSquare = board.getSquare(row, column);
 			if (candidateSquare.isEmpty()) {
-				validMovementSquares.add(candidateSquare);
+				normalMovementSquares.add(candidateSquare);
 			}
 		}
 
-		return validMovementSquares;
+		return normalMovementSquares;
+	}
+
+	private List<Square> getCaptureMovementSquares() {
+		List<Square> captureMovementSquares = new ArrayList<>();
+
+		int[] direction = getDirection();
+
+		Square leftSquare = board.getSquare(square.getRow() + direction[0], square.getColumn() - 1);
+		Square rightSquare = board.getSquare(square.getRow() + direction[0], square.getColumn() + 1);
+
+		for (Square square : List.of(leftSquare, rightSquare)) {
+			if (square != null && square.hasEnemyPiece(side)) {
+				captureMovementSquares.add(square);
+			}
+		}
+
+		return captureMovementSquares;
+	}
+
+	private int[] getDirection() {
+		return isWhite() ? new int[]{-1, 0} : new int[]{1, 0};
 	}
 }
