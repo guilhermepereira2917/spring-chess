@@ -11,6 +11,10 @@ public class Square {
 		this.column = column;
 	}
 
+	public boolean isEmpty() {
+		return piece == null;
+	}
+
 	public int getRow() {
 		return row;
 	}

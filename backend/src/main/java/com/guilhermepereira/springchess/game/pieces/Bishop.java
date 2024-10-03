@@ -1,12 +1,17 @@
 package com.guilhermepereira.springchess.game.pieces;
 
-import com.guilhermepereira.springchess.game.Piece;
-import com.guilhermepereira.springchess.game.PieceSide;
-import com.guilhermepereira.springchess.game.PieceType;
+import com.guilhermepereira.springchess.game.*;
+
+import java.util.List;
 
 public class Bishop extends Piece {
 
-	public Bishop(PieceSide side) {
-		super(PieceType.BISHOP, side);
+	public Bishop(Board board, Square square, PieceSide side) {
+		super(board, square, PieceType.BISHOP, side);
+	}
+
+	@Override
+	protected List<Square> getValidMovementSquares() {
+		return List.of();
 	}
 }

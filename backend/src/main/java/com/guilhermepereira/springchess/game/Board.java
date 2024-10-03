@@ -2,6 +2,8 @@ package com.guilhermepereira.springchess.game;
 
 import com.guilhermepereira.springchess.game.pieces.*;
 
+import java.util.List;
+
 public class Board {
 
 	private static final String fenStringInitialPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -30,7 +32,7 @@ public class Board {
 				int column = position % 8;
 
 				Square newSquare = new Square(row, column);
-				newSquare.setPiece(getPiece(character));
+				newSquare.setPiece(createPiece(newSquare, character));
 
 				squares[row][column] = newSquare;
 				position++;
@@ -46,34 +48,56 @@ public class Board {
 		}
 	}
 
-	private Piece getPiece(char character) {
+	private Piece createPiece(Square square, char character) {
 		PieceSide side = Character.isUpperCase(character) ? PieceSide.WHITE : PieceSide.BLACK;
 
 		if (character == 'r' || character == 'R') {
-			return new Rook(side);
+			return new Rook(this, square, side);
 		}
 
 		if (character == 'n' || character == 'N') {
-			return new Knight(side);
+			return new Knight(this, square, side);
 		}
 
 		if (character == 'b' || character == 'B') {
-			return new Bishop(side);
+			return new Bishop(this, square, side);
 		}
 
 		if (character == 'q' || character == 'Q') {
-			return new Queen(side);
+			return new Queen(this, square, side);
 		}
 
 		if (character == 'k' || character == 'K') {
-			return new King(side);
+			return new King(this, square, side);
 		}
 
 		if (character == 'p' || character == 'P') {
-			return new Pawn(side);
+			return new Pawn(this, square, side);
 		}
 
 		return null;
+	}
+
+	public boolean playMove(Move move) {
+		if (move.getOriginalSquare().isEmpty()) {
+			return false;
+		}
+
+		Piece piece = move.getOriginalSquare().getPiece();
+		List<Square> validMovementSquares = piece.getValidMovementSquares();
+		if (!validMovementSquares.contains(move.getTargetSquare())) {
+			return false;
+		}
+
+		move.getOriginalSquare().setPiece(null);
+		move.getTargetSquare().setPiece(piece);
+		piece.setSquare(move.getTargetSquare());
+
+		return true;
+	}
+
+	public Square getSquare(int row, int column) {
+		return squares[row][column];
 	}
 
 	public Square[][] getSquares() {

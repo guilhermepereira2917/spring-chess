@@ -1,12 +1,17 @@
 package com.guilhermepereira.springchess.game.pieces;
 
-import com.guilhermepereira.springchess.game.Piece;
-import com.guilhermepereira.springchess.game.PieceSide;
-import com.guilhermepereira.springchess.game.PieceType;
+import com.guilhermepereira.springchess.game.*;
+
+import java.util.List;
 
 public class Queen extends Piece {
 
-	public Queen(PieceSide side) {
-		super(PieceType.QUEEN, side);
+	public Queen(Board board, Square square, PieceSide side) {
+		super(board, square, PieceType.QUEEN, side);
+	}
+
+	@Override
+	protected List<Square> getValidMovementSquares() {
+		return List.of();
 	}
 }
