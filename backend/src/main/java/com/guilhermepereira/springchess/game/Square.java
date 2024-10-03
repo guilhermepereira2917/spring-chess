@@ -15,6 +15,10 @@ public class Square {
 		return !isEmpty() && piece.getSide() != side;
 	}
 
+	public boolean hasAllyPiece(PieceSide side) {
+		return !isEmpty() && piece.getSide() == side;
+	}
+
 	public boolean isEmpty() {
 		return piece == null;
 	}
