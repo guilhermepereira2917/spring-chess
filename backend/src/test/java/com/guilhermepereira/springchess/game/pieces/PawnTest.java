@@ -75,4 +75,16 @@ class PawnTest {
 		assertTrue(board.getSquare("e2").isEmpty());
 		assertTrue(board.getSquare("d7").isEmpty());
 	}
+
+	@Test
+	@DisplayName("Testing if pawn can't do invalid move")
+	public void shouldNotDoInvalidMove() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("e5"));
+		assertFalse(board.playMove("e3"));
+
+		assertTrue(board.getSquare("e4").getPiece().isPawn());
+		assertTrue(board.getSquare("e4").getPiece().isWhite());
+		assertTrue(board.getSquare("e3").isEmpty());
+	}
 }

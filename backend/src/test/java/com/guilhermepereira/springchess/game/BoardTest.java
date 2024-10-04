@@ -1,5 +1,6 @@
 package com.guilhermepereira.springchess.game;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,12 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BoardTest {
 
+	private final Board board = new Board();
+
+	@BeforeEach
+	public void initializeBoard() {
+		board.initialize();
+	}
+
 	@Test
 	@DisplayName("Testing board pieces position with FEN string initialization")
 	public void shouldProperlyInitializeBoard() {
-		Board board = new Board();
-		board.initialize();
-
 		PieceType[] pieceTypesOrder = new PieceType[] {
 			PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN,
 			PieceType.KING, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK,
@@ -43,5 +48,43 @@ class BoardTest {
 			assertTrue(blackPiece.isBlack());
 			assertEquals(pieceTypesOrder[i - 1], blackPiece.getType());
 		}
+	}
+
+	@Test
+	@DisplayName("Testing algebraic notation move row disambiguation")
+	public void shouldProperlyDisambiguateRow() {
+		assertTrue(board.playMove("Nf3"));
+		assertTrue(board.playMove("Nc6"));
+		assertTrue(board.playMove("Nc3"));
+		assertTrue(board.playMove("Nb8"));
+		assertTrue(board.playMove("Ng5"));
+		assertTrue(board.playMove("Nc6"));
+		assertTrue(board.playMove("Ne6"));
+		assertTrue(board.playMove("Nb8"));
+		assertTrue(board.playMove("Nc5"));
+		assertTrue(board.playMove("Nc6"));
+		assertTrue(board.playMove("N3e4"));
+
+		assertTrue(board.getSquare("e4").getPiece().isWhite());
+		assertTrue(board.getSquare("e4").getPiece().isKnight());
+		assertTrue(board.getSquare("c5").getPiece().isWhite());
+		assertTrue(board.getSquare("c5").getPiece().isKnight());
+	}
+
+	@Test
+	@DisplayName("Testing algebraic notation move column disambiguation")
+	public void shouldProperlyDisambiguateColumn() {
+		assertTrue(board.playMove("Nh3"));
+		assertTrue(board.playMove("Nc6"));
+		assertTrue(board.playMove("Nc3"));
+		assertTrue(board.playMove("Nb8"));
+		assertTrue(board.playMove("Nf4"));
+		assertTrue(board.playMove("Nc6"));
+		assertTrue(board.playMove("Ncd5"));
+
+		assertTrue(board.getSquare("d5").getPiece().isWhite());
+		assertTrue(board.getSquare("d5").getPiece().isKnight());
+		assertTrue(board.getSquare("f4").getPiece().isWhite());
+		assertTrue(board.getSquare("f4").getPiece().isKnight());
 	}
 }
