@@ -8,6 +8,10 @@ public class Game {
 		board.initialize();
 	}
 
+	public boolean playMove(String move) {
+		return board.playMove(move);
+	}
+
 	public boolean playMove(Move move) {
 		return board.playMove(move);
 	}

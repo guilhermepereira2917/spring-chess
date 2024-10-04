@@ -2,12 +2,16 @@ package com.guilhermepereira.springchess.game;
 
 import com.guilhermepereira.springchess.game.pieces.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Board {
 
 	private static final String fenStringInitialPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	private Square[][] squares = new Square[8][8];
+	private Map<PieceSide, Map<PieceType, List<Piece>>> pieces;
 
 	private PieceSide turnSide;
 
@@ -16,6 +20,8 @@ public class Board {
 	}
 
 	public void initialize(String fenString) {
+		pieces = new HashMap<>();
+
 		String[] stringInfo = fenString.split(" ");
 
 		placePieces(stringInfo[0]);
@@ -35,7 +41,12 @@ public class Board {
 				int column = position % 8;
 
 				Square newSquare = new Square(row, column);
-				newSquare.setPiece(createPiece(newSquare, character));
+				Piece newPiece = createPiece(newSquare, character);
+				if (newPiece != null) {
+					addPiece(newPiece);
+				}
+
+				newSquare.setPiece(newPiece);
 
 				squares[row][column] = newSquare;
 				position++;
@@ -81,6 +92,11 @@ public class Board {
 		return null;
 	}
 
+	public boolean playMove(String algebraicMove) {
+		Move move = AlgebraicNotationConverter.convertAlgebraicMove(this, algebraicMove);
+		return move != null && playMove(move);
+	}
+
 	public boolean playMove(Move move) {
 		if (move.getOriginalSquare().isEmpty()) {
 			return false;
@@ -96,6 +112,10 @@ public class Board {
 			return false;
 		}
 
+		if (!move.getTargetSquare().isEmpty()) {
+			removePiece(piece);
+		}
+
 		move.getOriginalSquare().setPiece(null);
 		move.getTargetSquare().setPiece(piece);
 
@@ -107,12 +127,30 @@ public class Board {
 		return true;
 	}
 
+	private void addPiece(Piece piece) {
+		pieces.computeIfAbsent(piece.getSide(), k -> new HashMap<>()).computeIfAbsent(piece.getType(), k -> new ArrayList<>()).add(piece);
+	}
+
+	private void removePiece(Piece piece) {
+		pieces.get(piece.getSide()).get(piece.getType()).remove(piece);
+	}
+
 	public Square getSquare(int row, int column) {
 		if (row >= 0 && row < squares.length && column >= 0 && column < squares[0].length) {
 			return squares[row][column];
 		}
 
 		return null;
+	}
+
+	public Square getSquare(String algebraicCoordinate) {
+		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate(algebraicCoordinate);
+
+		return squares[coordinates[0]][coordinates[1]];
+	}
+
+	public List<Piece> getCurrentSidePieces(PieceType type) {
+		return pieces.get(turnSide).get(type);
 	}
 
 	public Square[][] getSquares() {

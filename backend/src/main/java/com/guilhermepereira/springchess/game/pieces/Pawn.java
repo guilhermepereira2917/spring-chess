@@ -4,6 +4,7 @@ import com.guilhermepereira.springchess.game.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Pawn extends Piece {
@@ -48,7 +49,7 @@ public class Pawn extends Piece {
 		Square leftSquare = board.getSquare(square.getRow() + direction[0], square.getColumn() - 1);
 		Square rightSquare = board.getSquare(square.getRow() + direction[0], square.getColumn() + 1);
 
-		for (Square square : List.of(leftSquare, rightSquare)) {
+		for (Square square : Stream.of(leftSquare, rightSquare).filter(Objects::nonNull).toList()) {
 			if (square != null && square.hasEnemyPiece(side)) {
 				captureMovementSquares.add(square);
 			}

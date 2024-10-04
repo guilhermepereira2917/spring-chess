@@ -24,6 +24,30 @@ public abstract class Piece {
 
 	protected abstract List<Square> getValidMovementSquares();
 
+	public boolean isPawn() {
+		return type == PieceType.PAWN;
+	}
+
+	public boolean isKnight() {
+		return type == PieceType.KNIGHT;
+	}
+
+	public boolean isBishop() {
+		return type == PieceType.BISHOP;
+	}
+
+	public boolean isRook() {
+		return type == PieceType.ROOK;
+	}
+
+	public boolean isQueen() {
+		return type == PieceType.QUEEN;
+	}
+
+	public boolean isKing() {
+		return type == PieceType.KING;
+	}
+
 	public boolean isBlack() {
 		return this.getSide() == PieceSide.BLACK;
 	}
