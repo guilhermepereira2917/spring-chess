@@ -2,6 +2,7 @@ package com.guilhermepereira.springchess.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Piece {
@@ -23,6 +24,65 @@ public abstract class Piece {
 	}
 
 	protected abstract List<Square> getValidMovementSquares();
+
+	protected List<Square> getHorizontallyAndVerticallyValidMovementSquares() {
+		return getHorizontallyAndVerticallyValidMovementSquares(null);
+	}
+
+	protected List<Square> getHorizontallyAndVerticallyValidMovementSquares(Integer maxDistance) {
+		int[][] directions = new int[][] {
+			{1, 0},
+			{0, 1},
+			{-1, 0},
+			{0, -1},
+		};
+
+		return getValidMovementSquaresFromDirections(directions, maxDistance);
+	}
+
+	protected List<Square> getDiagonallyValidMovementSquares() {
+		return getDiagonallyValidMovementSquares(null);
+	}
+
+	protected List<Square> getDiagonallyValidMovementSquares(Integer maxDistance) {
+		int[][] directions = new int[][] {
+			{1, 1},
+			{-1, 1},
+			{-1, -1},
+			{1, -1},
+		};
+
+		return getValidMovementSquaresFromDirections(directions, maxDistance);
+	}
+
+	private List<Square> getValidMovementSquaresFromDirections(int[][] directions, Integer maxDistance) {
+		List<Square> validMovementSquares = new ArrayList<>();
+
+		for (int[] direction : directions) {
+			int row = getRow() + direction[0];
+			int column = getColumn() + direction[1];
+			int currentDistance = 1;
+
+			Square candidateSquare = board.getSquare(row, column);
+			while (candidateSquare != null && (maxDistance == null || currentDistance <= maxDistance)) {
+				if (!candidateSquare.hasAllyPiece(side)) {
+					validMovementSquares.add(candidateSquare);
+				}
+
+				if (!candidateSquare.isEmpty()) {
+					break;
+				}
+
+				row += direction[0];
+				column += direction[1];
+				currentDistance++;
+
+				candidateSquare = board.getSquare(row, column);
+			}
+		}
+
+		return validMovementSquares;
+	}
 
 	public boolean isPawn() {
 		return type == PieceType.PAWN;

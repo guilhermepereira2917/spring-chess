@@ -12,6 +12,6 @@ public class Rook extends Piece {
 
 	@Override
 	protected List<Square> getValidMovementSquares() {
-		return List.of();
+		return getHorizontallyAndVerticallyValidMovementSquares();
 	}
 }
