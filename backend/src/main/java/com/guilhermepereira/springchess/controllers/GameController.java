@@ -2,7 +2,7 @@ package com.guilhermepereira.springchess.controllers;
 
 import com.guilhermepereira.springchess.dtos.MoveDto;
 import com.guilhermepereira.springchess.game.Game;
-import com.guilhermepereira.springchess.game.Move;
+import com.guilhermepereira.springchess.game.moves.Move;
 import com.guilhermepereira.springchess.game.Square;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

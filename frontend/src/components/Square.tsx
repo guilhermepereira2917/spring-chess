@@ -4,6 +4,8 @@ import PieceModel from "@/models/game/pieceModel";
 import SquareModel from "@/models/game/squareModel";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
+import { Tooltip } from "./ui/tooltip";
+import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 interface Props {
   square: SquareModel,
@@ -28,7 +30,8 @@ export default function Square(props: Props): ReactNode {
     'top-1/2',
     '-translate-x-1/2',
     '-translate-y-1/2',
-    { 'scale-110': props.isSquareSelected }
+    { 'scale-110': props.isSquareSelected },
+    'pointer-events-none'
   );
 
   const pieceSvgPath: string | null = ((): string | null => {
@@ -65,12 +68,22 @@ export default function Square(props: Props): ReactNode {
     return `pieces/horsey/${pieceColor}${pieceAbreviationLetter}.svg`;
   })();
 
+  const squareCoordinate: string = `${String.fromCharCode(props.square.column + 97)}${8 - props.square.row} {${props.square.row}, ${props.square.column}}`;
+
   return (
-    <div className={divClassNames} onClick={() => { props.handleSquareClicked(props.square) }}>
-      <p className="text-red-600 font-bold">{`${props.square.row}, ${props.square.column}`}</p>
-      {pieceSvgPath && (
-        <img className={imgClassNames} src={pieceSvgPath} />
-      )}
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <div className={divClassNames} onClick={() => { props.handleSquareClicked(props.square) }}>
+            {pieceSvgPath && (
+              <img className={imgClassNames} src={pieceSvgPath} />
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={-50}>
+          <p className="text-red-400 font-bold m-1 z-50 bg-white p-1 rounded outline">{squareCoordinate}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

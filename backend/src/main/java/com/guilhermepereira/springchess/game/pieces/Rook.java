@@ -1,6 +1,7 @@
 package com.guilhermepereira.springchess.game.pieces;
 
 import com.guilhermepereira.springchess.game.*;
+import com.guilhermepereira.springchess.game.moves.Move;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	protected List<Square> getValidMovementSquares() {
+	protected List<? extends Move> getValidMoves() {
 		return getHorizontallyAndVerticallyValidMovementSquares();
 	}
 }

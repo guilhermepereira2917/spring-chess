@@ -1,5 +1,6 @@
 package com.guilhermepereira.springchess.game;
 
+import com.guilhermepereira.springchess.game.moves.Move;
 import com.guilhermepereira.springchess.game.pieces.*;
 
 import java.util.ArrayList;
@@ -107,24 +108,28 @@ public class Board {
 			return false;
 		}
 
-		List<Square> validMovementSquares = piece.getValidMovementSquares();
-		if (!validMovementSquares.contains(move.getTargetSquare())) {
+		if (!piece.canMakeMove(move.getTargetSquare())) {
 			return false;
 		}
 
-		if (!move.getTargetSquare().isEmpty()) {
-			removePiece(piece);
-		}
-
-		move.getOriginalSquare().setPiece(null);
-		move.getTargetSquare().setPiece(piece);
-
-		piece.setSquare(move.getTargetSquare());
-		piece.setHasMoved(true);
+		Move executableMove = piece.getMove(move.getTargetSquare());
+		executableMove.execute(this);
 
 		turnSide = turnSide == PieceSide.WHITE ? PieceSide.BLACK : PieceSide.WHITE;
 
 		return true;
+	}
+
+	public void movePiece(Piece piece, Square targetSquare) {
+		if (!targetSquare.isEmpty()) {
+			removePiece(targetSquare.getPiece());
+		}
+
+		piece.getSquare().setPiece(null);
+		targetSquare.setPiece(piece);
+
+		piece.setSquare(targetSquare);
+		piece.setHasMoved(true);
 	}
 
 	private void addPiece(Piece piece) {
@@ -151,6 +156,14 @@ public class Board {
 
 	public List<Piece> getCurrentSidePieces(PieceType type) {
 		return pieces.get(turnSide).get(type);
+	}
+
+	public boolean isWhiteTurn() {
+		return turnSide == PieceSide.WHITE;
+	}
+
+	public boolean isBlackTurn() {
+		return turnSide == PieceSide.BLACK;
 	}
 
 	public Square[][] getSquares() {

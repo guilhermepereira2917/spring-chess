@@ -1,6 +1,7 @@
 package com.guilhermepereira.springchess.game.pieces;
 
 import com.guilhermepereira.springchess.game.*;
+import com.guilhermepereira.springchess.game.moves.Move;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,7 +13,7 @@ public class Queen extends Piece {
 	}
 
 	@Override
-	protected List<Square> getValidMovementSquares() {
+	protected List<? extends Move> getValidMoves() {
 		return Stream.concat(getDiagonallyValidMovementSquares().stream(), getHorizontallyAndVerticallyValidMovementSquares().stream()).toList();
 	}
 }

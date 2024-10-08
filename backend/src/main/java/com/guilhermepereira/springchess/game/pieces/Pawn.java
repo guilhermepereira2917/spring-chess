@@ -1,6 +1,7 @@
 package com.guilhermepereira.springchess.game.pieces;
 
 import com.guilhermepereira.springchess.game.*;
+import com.guilhermepereira.springchess.game.moves.Move;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,12 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	protected List<Square> getValidMovementSquares() {
+	protected List<? extends Move> getValidMoves() {
 		return Stream.concat(getNormalMovementSquares().stream(), getCaptureMovementSquares().stream()).toList();
 	}
 
-	private List<Square> getNormalMovementSquares() {
-		List<Square> normalMovementSquares = new ArrayList<>();
+	private List<Move> getNormalMovementSquares() {
+		List<Move> normalMovementSquares = new ArrayList<>();
 
 		int[] direction = getDirection();
 
@@ -34,15 +35,15 @@ public class Pawn extends Piece {
 
 			Square candidateSquare = board.getSquare(row, column);
 			if (candidateSquare.isEmpty()) {
-				normalMovementSquares.add(candidateSquare);
+				normalMovementSquares.add(createMove(candidateSquare));
 			}
 		}
 
 		return normalMovementSquares;
 	}
 
-	private List<Square> getCaptureMovementSquares() {
-		List<Square> captureMovementSquares = new ArrayList<>();
+	private List<Move> getCaptureMovementSquares() {
+		List<Move> captureMovementSquares = new ArrayList<>();
 
 		int[] direction = getDirection();
 
@@ -51,7 +52,7 @@ public class Pawn extends Piece {
 
 		for (Square square : Stream.of(leftSquare, rightSquare).filter(Objects::nonNull).toList()) {
 			if (square != null && square.hasEnemyPiece(side)) {
-				captureMovementSquares.add(square);
+				captureMovementSquares.add(createMove(square));
 			}
 		}
 

@@ -1,6 +1,7 @@
 package com.guilhermepereira.springchess.game.pieces;
 
 import com.guilhermepereira.springchess.game.*;
+import com.guilhermepereira.springchess.game.moves.Move;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ public class Knight extends Piece {
 	}
 
 	@Override
-	protected List<Square> getValidMovementSquares() {
-		List<Square> validMovementSquares = new ArrayList<>();
+	protected List<? extends Move> getValidMoves() {
+		List<Move> validMovementSquares = new ArrayList<>();
 
 		int[][] directions = new int[][] {
 			{2, 1},
@@ -29,7 +30,7 @@ public class Knight extends Piece {
 		for (int[] direction : directions) {
 			Square candidateSquare = board.getSquare(this.square.getRow() + direction[0], this.square.getColumn() + direction[1]);
 			if (candidateSquare != null && !candidateSquare.hasAllyPiece(side)) {
-				validMovementSquares.add(candidateSquare);
+				validMovementSquares.add(createMove(candidateSquare));
 			}
 		}
 

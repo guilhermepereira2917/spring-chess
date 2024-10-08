@@ -1,5 +1,7 @@
 package com.guilhermepereira.springchess.game;
 
+import com.guilhermepereira.springchess.game.moves.Move;
+
 import java.util.List;
 
 public abstract class AlgebraicNotationConverter {
@@ -10,7 +12,7 @@ public abstract class AlgebraicNotationConverter {
 				Square targetSquare = board.getSquare(algebraicMove.substring(0, 2));
 				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
 				for (Piece pawn : pawns) {
-					if (pawn.getValidMovementSquares().contains(targetSquare)) {
+					if (pawn.canMakeMove(targetSquare)) {
 						return new Move(pawn.getSquare(), targetSquare);
 					}
 				}
@@ -19,12 +21,12 @@ public abstract class AlgebraicNotationConverter {
 				Square targetSquare = board.getSquare(algebraicMove.substring(2, 4));
 				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
 				for (Piece pawn : pawns) {
-					if (pawn.getColumn() == pawnColumn && pawn.getValidMovementSquares().contains(targetSquare)) {
+					if (pawn.getColumn() == pawnColumn && pawn.canMakeMove(targetSquare)) {
 						return new Move(pawn.getSquare(), targetSquare);
 					}
 				}
 			}
-		} else {
+		} else if (isPieceMovement(algebraicMove)) {
 			algebraicMove = algebraicMove.replace("x", "");
 
 			Integer disambiguationRow = null;
@@ -55,10 +57,24 @@ public abstract class AlgebraicNotationConverter {
 					continue;
 				}
 
-				if (piece.getValidMovementSquares().contains(targetSquare)) {
+				if (piece.canMakeMove(targetSquare)) {
 					return new Move(piece.getSquare(), targetSquare);
 				}
 			}
+		} else if (isCastlingMovement(algebraicMove)) {
+			if (board.isWhiteTurn()) {
+				if (isKingsideCastling(algebraicMove)) {
+					return new Move(board.getSquare("e1"), board.getSquare("g1"));
+				}
+
+				return new Move(board.getSquare("e1"), board.getSquare("b1"));
+			}
+
+			if (isKingsideCastling(algebraicMove)) {
+				return new Move(board.getSquare("e8"), board.getSquare("g8"));
+			}
+
+			return new Move(board.getSquare("e8"), board.getSquare("b8"));
 		}
 
 		return null;
@@ -66,6 +82,18 @@ public abstract class AlgebraicNotationConverter {
 
 	private static boolean isPawnMovement(String algebraicNotation) {
 		return Character.isLowerCase(algebraicNotation.charAt(0));
+	}
+
+	private static boolean isPieceMovement(String algebraicNotation) {
+		return Character.isUpperCase(algebraicNotation.charAt(0));
+	}
+
+	private static boolean isCastlingMovement(String algebraicNotation) {
+		return Character.isDigit(algebraicNotation.charAt(0));
+	}
+
+	private static boolean isKingsideCastling(String algebraicNotation) {
+		return algebraicNotation.length() == 3;
 	}
 
 	private static boolean isCaptureMovement(String algebraicNotation) {
