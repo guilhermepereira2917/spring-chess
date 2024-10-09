@@ -1,7 +1,9 @@
 package com.guilhermepereira.springchess.game.pieces;
 
 import com.guilhermepereira.springchess.game.*;
+import com.guilhermepereira.springchess.game.moves.EnPassantMove;
 import com.guilhermepereira.springchess.game.moves.Move;
+import com.guilhermepereira.springchess.game.moves.PawnDoubleSquareMove;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,11 @@ public class Pawn extends Piece {
 
 			Square candidateSquare = board.getSquare(row, column);
 			if (candidateSquare.isEmpty()) {
-				normalMovementSquares.add(createMove(candidateSquare));
+				if (i == 0) {
+					normalMovementSquares.add(createMove(candidateSquare));
+				} else {
+					normalMovementSquares.add(createDoubleSquareMove(candidateSquare, board.getSquare(row - direction[0], column)));
+				}
 			}
 		}
 
@@ -51,12 +57,24 @@ public class Pawn extends Piece {
 		Square rightSquare = board.getSquare(square.getRow() + direction[0], square.getColumn() + 1);
 
 		for (Square square : Stream.of(leftSquare, rightSquare).filter(Objects::nonNull).toList()) {
-			if (square != null && square.hasEnemyPiece(side)) {
-				captureMovementSquares.add(createMove(square));
+			if (square != null) {
+				if (square.hasEnemyPiece(side)) {
+					captureMovementSquares.add(createMove(square));
+				} else if (square.equals(board.getEnPassantSquare())) {
+					captureMovementSquares.add(createEnPassantMove(square, board.getSquare(square.getRow() - direction[0], square.getColumn())));
+				}
 			}
 		}
 
 		return captureMovementSquares;
+	}
+
+	private PawnDoubleSquareMove createDoubleSquareMove(Square targetSquare, Square enPassantSquare) {
+		return new PawnDoubleSquareMove(square, targetSquare, enPassantSquare);
+	}
+
+	private EnPassantMove createEnPassantMove(Square targetSquare, Square enemyPawnSquare) {
+		return new EnPassantMove(square, targetSquare, enemyPawnSquare);
 	}
 
 	private int[] getDirection() {

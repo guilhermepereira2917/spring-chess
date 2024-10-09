@@ -87,4 +87,37 @@ class PawnTest {
 		assertTrue(board.getSquare("e4").getPiece().isWhite());
 		assertTrue(board.getSquare("e3").isEmpty());
 	}
+
+	@Test
+	@DisplayName("Testing if pawn can do en passant")
+	public void shouldDoEnPassant() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("d5"));
+		assertTrue(board.playMove("e5"));
+		assertTrue(board.playMove("f5"));
+		assertTrue(board.playMove("exf6"));
+
+		assertTrue(board.getSquare("f6").getPiece().isPawn());
+		assertTrue(board.getSquare("f6").getPiece().isWhite());
+		assertTrue(board.getSquare("f5").isEmpty());
+		assertNull(board.getEnPassantSquare());
+	}
+
+	@Test
+	@DisplayName("Testing if pawn can't do en passant when the other pawn has moved only one square")
+	public void shouldNotDoEnPassant() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("d5"));
+		assertTrue(board.playMove("e5"));
+		assertTrue(board.playMove("d4"));
+		assertTrue(board.playMove("e6"));
+		assertTrue(board.playMove("f6"));
+		assertFalse(board.playMove("exf7"));
+
+		assertTrue(board.getSquare("e6").getPiece().isPawn());
+		assertTrue(board.getSquare("e6").getPiece().isWhite());
+		assertTrue(board.getSquare("f6").getPiece().isPawn());
+		assertTrue(board.getSquare("f6").getPiece().isBlack());
+		assertTrue(board.getSquare("f7").isEmpty());
+	}
 }

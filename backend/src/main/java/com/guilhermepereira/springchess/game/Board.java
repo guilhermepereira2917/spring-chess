@@ -15,6 +15,7 @@ public class Board {
 	private Map<PieceSide, Map<PieceType, List<Piece>>> pieces;
 
 	private PieceSide turnSide;
+	private Square enPassantSquare;
 
 	public void initialize() {
 		initialize(fenStringInitialPosition);
@@ -27,6 +28,7 @@ public class Board {
 
 		placePieces(stringInfo[0]);
 		turnSide = stringInfo[1].equals("w") ? PieceSide.WHITE : PieceSide.BLACK;
+		enPassantSquare = null;
 	}
 
 	private void placePieces(String piecesPositionString) {
@@ -116,20 +118,30 @@ public class Board {
 		executableMove.execute(this);
 
 		turnSide = turnSide == PieceSide.WHITE ? PieceSide.BLACK : PieceSide.WHITE;
+		if (!executableMove.isPawnDoubleSquareMove()) {
+			enPassantSquare = null;
+		}
 
 		return true;
 	}
 
 	public void movePiece(Piece piece, Square targetSquare) {
-		if (!targetSquare.isEmpty()) {
-			removePiece(targetSquare.getPiece());
-		}
+		capturePiece(targetSquare.getPiece());
 
 		piece.getSquare().setPiece(null);
 		targetSquare.setPiece(piece);
 
 		piece.setSquare(targetSquare);
 		piece.setHasMoved(true);
+	}
+
+	public void capturePiece(Piece piece) {
+		if (piece == null) {
+			return;
+		}
+
+		piece.getSquare().setPiece(null);
+		removePiece(piece);
 	}
 
 	private void addPiece(Piece piece) {
@@ -172,5 +184,13 @@ public class Board {
 
 	public void setSquares(Square[][] squares) {
 		this.squares = squares;
+	}
+
+	public Square getEnPassantSquare() {
+		return enPassantSquare;
+	}
+
+	public void setEnPassantSquare(Square enPassantSquare) {
+		this.enPassantSquare = enPassantSquare;
 	}
 }

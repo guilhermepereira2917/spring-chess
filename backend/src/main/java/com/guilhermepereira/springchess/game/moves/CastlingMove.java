@@ -9,7 +9,7 @@ public class CastlingMove extends Move {
 	private final Square rookTargetSquare;
 
 	public CastlingMove(Square originalSquare, Square targetSquare, Square rookInitialSquare, Square rookTargetSquare) {
-		super(originalSquare, targetSquare);
+		super(originalSquare, targetSquare, MoveType.CASTLING);
 		this.rookInitialSquare = rookInitialSquare;
 		this.rookTargetSquare = rookTargetSquare;
 	}
