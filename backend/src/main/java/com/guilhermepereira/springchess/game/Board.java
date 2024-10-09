@@ -114,7 +114,7 @@ public class Board {
 			return false;
 		}
 
-		Move executableMove = piece.getMove(move.getTargetSquare());
+		Move executableMove = piece.getMove(move);
 		executableMove.execute(this);
 
 		turnSide = turnSide == PieceSide.WHITE ? PieceSide.BLACK : PieceSide.WHITE;
@@ -144,11 +144,11 @@ public class Board {
 		removePiece(piece);
 	}
 
-	private void addPiece(Piece piece) {
+	public void addPiece(Piece piece) {
 		pieces.computeIfAbsent(piece.getSide(), k -> new HashMap<>()).computeIfAbsent(piece.getType(), k -> new ArrayList<>()).add(piece);
 	}
 
-	private void removePiece(Piece piece) {
+	public void removePiece(Piece piece) {
 		pieces.get(piece.getSide()).get(piece.getType()).remove(piece);
 	}
 

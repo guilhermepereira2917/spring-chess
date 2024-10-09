@@ -1,6 +1,7 @@
 package com.guilhermepereira.springchess.game;
 
 import com.guilhermepereira.springchess.game.moves.Move;
+import com.guilhermepereira.springchess.game.moves.PromotionMove;
 
 import java.util.List;
 
@@ -13,7 +14,12 @@ public abstract class AlgebraicNotationConverter {
 				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
 				for (Piece pawn : pawns) {
 					if (pawn.canMakeMove(targetSquare)) {
-						return new Move(pawn.getSquare(), targetSquare);
+						if (isPromotionMovement(algebraicMove)) {
+							char pieceSymbol = algebraicMove.charAt(algebraicMove.length() - 1);
+							return new PromotionMove(pawn.getSquare(), targetSquare, PieceType.getPieceTypeFromSymbol(pieceSymbol));
+						} else {
+							return new Move(pawn.getSquare(), targetSquare);
+						}
 					}
 				}
 			} else {
@@ -22,7 +28,12 @@ public abstract class AlgebraicNotationConverter {
 				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
 				for (Piece pawn : pawns) {
 					if (pawn.getColumn() == pawnColumn && pawn.canMakeMove(targetSquare)) {
-						return new Move(pawn.getSquare(), targetSquare);
+						if (isPromotionMovement(algebraicMove)) {
+							char pieceSymbol = algebraicMove.charAt(algebraicMove.length() - 1);
+							return new PromotionMove(pawn.getSquare(), targetSquare, PieceType.getPieceTypeFromSymbol(pieceSymbol));
+						} else {
+							return new Move(pawn.getSquare(), targetSquare);
+						}
 					}
 				}
 			}
@@ -46,7 +57,7 @@ public abstract class AlgebraicNotationConverter {
 				targetSquare = board.getSquare(algebraicMove.substring(2, 4));
 			}
 
-			PieceType pieceType = PieceType.getPieceTypeFromSybol(algebraicMove.charAt(0));
+			PieceType pieceType = PieceType.getPieceTypeFromSymbol(algebraicMove.charAt(0));
 			List<Piece> pieces = board.getCurrentSidePieces(pieceType);
 			for (Piece piece : pieces) {
 				if (disambiguationRow != null && piece.getRow() != disambiguationRow) {
@@ -98,6 +109,10 @@ public abstract class AlgebraicNotationConverter {
 
 	private static boolean isCaptureMovement(String algebraicNotation) {
 		return algebraicNotation.charAt(1) == 'x';
+	}
+
+	private static boolean isPromotionMovement(String algebraicNotation) {
+		return algebraicNotation.charAt(algebraicNotation.length() - 2) == '=';
 	}
 
 	private static boolean hasDisambiguationRow(String algebraicNotation) {

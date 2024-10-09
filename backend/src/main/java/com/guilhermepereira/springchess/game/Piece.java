@@ -30,8 +30,8 @@ public abstract class Piece {
 		return getValidMoves().stream().anyMatch(m -> m.getTargetSquare().equals(targetSquare));
 	}
 
-	public Move getMove(Square targetSquare) {
-		return getValidMoves().stream().filter(m -> m.getTargetSquare().equals(targetSquare)).findFirst().orElse(null);
+	public Move getMove(Move move) {
+		return getValidMoves().stream().filter(m -> m.getTargetSquare().equals(move.getTargetSquare())).findFirst().orElse(null);
 	}
 
 	protected List<Move> getHorizontallyAndVerticallyValidMovementSquares() {

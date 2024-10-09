@@ -120,4 +120,38 @@ class PawnTest {
 		assertTrue(board.getSquare("f6").getPiece().isBlack());
 		assertTrue(board.getSquare("f7").isEmpty());
 	}
+
+	@Test
+	@DisplayName("Testing if pawn can promote to queen")
+	public void shouldPromoteToQueen() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("d5"));
+		assertTrue(board.playMove("e5"));
+		assertTrue(board.playMove("d4"));
+		assertTrue(board.playMove("e6"));
+		assertTrue(board.playMove("d3"));
+		assertTrue(board.playMove("exf7+"));
+		assertTrue(board.playMove("Kd7"));
+		assertTrue(board.playMove("fxg8=Q"));
+
+		assertTrue(board.getSquare("g8").getPiece().isQueen());
+		assertTrue(board.getSquare("g8").getPiece().isWhite());
+	}
+
+	@Test
+	@DisplayName("Testing if pawn can promote to rook")
+	public void shouldPromoteToRook() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("d5"));
+		assertTrue(board.playMove("e5"));
+		assertTrue(board.playMove("d4"));
+		assertTrue(board.playMove("e6"));
+		assertTrue(board.playMove("d3"));
+		assertTrue(board.playMove("exf7+"));
+		assertTrue(board.playMove("Kd7"));
+		assertTrue(board.playMove("fxg8=R"));
+
+		assertTrue(board.getSquare("g8").getPiece().isRook());
+		assertTrue(board.getSquare("g8").getPiece().isWhite());
+	}
 }

@@ -40,7 +40,7 @@ public enum PieceType {
 
 	public abstract char getSymbol();
 
-	public static PieceType getPieceTypeFromSybol(char symbol) {
+	public static PieceType getPieceTypeFromSymbol(char symbol) {
 		for (final PieceType pieceType : PieceType.values()) {
 			if (pieceType.getSymbol() == symbol) {
 				return pieceType;

@@ -4,8 +4,8 @@ import com.guilhermepereira.springchess.game.Board;
 import com.guilhermepereira.springchess.game.Square;
 
 public class Move {
-	private final Square originalSquare;
-	private final Square targetSquare;
+	protected final Square originalSquare;
+	protected final Square targetSquare;
 	private final MoveType type;
 
 	public Move(Square originalSquare, Square targetSquare) {
@@ -48,5 +48,22 @@ public class Move {
 
 	public MoveType getType() {
 		return type;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Move move = (Move) o;
+		return originalSquare.equals(move.originalSquare) && targetSquare.equals(move.targetSquare) && type == move.type;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = originalSquare.hashCode();
+		result = 31 * result + targetSquare.hashCode();
+		result = 31 * result + type.hashCode();
+		return result;
 	}
 }
