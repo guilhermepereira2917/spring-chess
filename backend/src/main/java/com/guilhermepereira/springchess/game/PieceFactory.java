@@ -4,6 +4,13 @@ import com.guilhermepereira.springchess.game.pieces.*;
 
 public abstract class PieceFactory {
 
+	public static Piece createPieceFromPieceType(Board board, Square square, char pieceSymbol) {
+		PieceSide side = Character.isUpperCase(pieceSymbol) ? PieceSide.WHITE : PieceSide.BLACK;
+		PieceType type = PieceType.getPieceTypeFromSymbol(Character.toUpperCase(pieceSymbol));
+
+		return createPieceFromPieceType(board, square, side, type);
+	}
+
 	public static Piece createPieceFromPieceType(Board board, Square square, PieceSide side, PieceType type) {
 		switch (type) {
 			case PAWN -> {

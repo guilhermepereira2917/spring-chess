@@ -1,7 +1,6 @@
 package com.guilhermepereira.springchess.game;
 
 import com.guilhermepereira.springchess.game.moves.Move;
-import com.guilhermepereira.springchess.game.pieces.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class Board {
 				int column = position % 8;
 
 				Square newSquare = new Square(row, column);
-				Piece newPiece = createPiece(newSquare, character);
+				Piece newPiece = PieceFactory.createPieceFromPieceType(this, newSquare, character);
 				if (newPiece != null) {
 					addPiece(newPiece);
 				}
@@ -63,36 +62,6 @@ public class Board {
 				}
 			}
 		}
-	}
-
-	private Piece createPiece(Square square, char character) {
-		PieceSide side = Character.isUpperCase(character) ? PieceSide.WHITE : PieceSide.BLACK;
-
-		if (character == 'r' || character == 'R') {
-			return new Rook(this, square, side);
-		}
-
-		if (character == 'n' || character == 'N') {
-			return new Knight(this, square, side);
-		}
-
-		if (character == 'b' || character == 'B') {
-			return new Bishop(this, square, side);
-		}
-
-		if (character == 'q' || character == 'Q') {
-			return new Queen(this, square, side);
-		}
-
-		if (character == 'k' || character == 'K') {
-			return new King(this, square, side);
-		}
-
-		if (character == 'p' || character == 'P') {
-			return new Pawn(this, square, side);
-		}
-
-		return null;
 	}
 
 	public boolean playMove(String algebraicMove) {
@@ -166,7 +135,15 @@ public class Board {
 		return squares[coordinates[0]][coordinates[1]];
 	}
 
-	public List<Piece> getCurrentSidePieces(PieceType type) {
+	public List<? extends Move> getAllCurrentSideMoves() {
+		return getAllCurrentSidePieces().stream().map(Piece::getValidMoves).flatMap(List::stream).toList();
+	}
+
+	public List<Piece> getAllCurrentSidePieces() {
+		return pieces.get(turnSide).values().stream().flatMap(List::stream).toList();
+	}
+
+	public List<Piece> getAllCurrentSidePiecesOfType(PieceType type) {
 		return pieces.get(turnSide).get(type);
 	}
 

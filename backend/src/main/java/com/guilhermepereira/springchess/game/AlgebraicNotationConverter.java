@@ -11,7 +11,7 @@ public abstract class AlgebraicNotationConverter {
 		if (isPawnMovement(algebraicMove)) {
 			if (!isCaptureMovement(algebraicMove)) {
 				Square targetSquare = board.getSquare(algebraicMove.substring(0, 2));
-				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
+				List<Piece> pawns = board.getAllCurrentSidePiecesOfType(PieceType.PAWN);
 				for (Piece pawn : pawns) {
 					if (pawn.canMakeMove(targetSquare)) {
 						if (isPromotionMovement(algebraicMove)) {
@@ -25,7 +25,7 @@ public abstract class AlgebraicNotationConverter {
 			} else {
 				int pawnColumn = convertAlgebraicColumn(algebraicMove.charAt(0));
 				Square targetSquare = board.getSquare(algebraicMove.substring(2, 4));
-				List<Piece> pawns = board.getCurrentSidePieces(PieceType.PAWN);
+				List<Piece> pawns = board.getAllCurrentSidePiecesOfType(PieceType.PAWN);
 				for (Piece pawn : pawns) {
 					if (pawn.getColumn() == pawnColumn && pawn.canMakeMove(targetSquare)) {
 						if (isPromotionMovement(algebraicMove)) {
@@ -58,7 +58,7 @@ public abstract class AlgebraicNotationConverter {
 			}
 
 			PieceType pieceType = PieceType.getPieceTypeFromSymbol(algebraicMove.charAt(0));
-			List<Piece> pieces = board.getCurrentSidePieces(pieceType);
+			List<Piece> pieces = board.getAllCurrentSidePiecesOfType(pieceType);
 			for (Piece piece : pieces) {
 				if (disambiguationRow != null && piece.getRow() != disambiguationRow) {
 					continue;
