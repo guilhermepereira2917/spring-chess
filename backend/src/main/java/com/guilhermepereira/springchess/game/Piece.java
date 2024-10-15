@@ -97,42 +97,52 @@ public abstract class Piece {
 		return new Move(square, targetSquare);
 	}
 
+	@JsonIgnore
 	public boolean isPawn() {
 		return type == PieceType.PAWN;
 	}
 
+	@JsonIgnore
 	public boolean isKnight() {
 		return type == PieceType.KNIGHT;
 	}
 
+	@JsonIgnore
 	public boolean isBishop() {
 		return type == PieceType.BISHOP;
 	}
 
+	@JsonIgnore
 	public boolean isRook() {
 		return type == PieceType.ROOK;
 	}
 
+	@JsonIgnore
 	public boolean isQueen() {
 		return type == PieceType.QUEEN;
 	}
 
+	@JsonIgnore
 	public boolean isKing() {
 		return type == PieceType.KING;
 	}
 
+	@JsonIgnore
 	public boolean isBlack() {
 		return this.getSide() == PieceSide.BLACK;
 	}
 
+	@JsonIgnore
 	public boolean isWhite() {
 		return this.getSide() == PieceSide.WHITE;
 	}
 
+	@JsonIgnore
 	public int getRow() {
 		return square.getRow();
 	}
 
+	@JsonIgnore
 	public int getColumn() {
 		return square.getColumn();
 	}

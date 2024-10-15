@@ -1,5 +1,7 @@
 package com.guilhermepereira.springchess.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Square {
 
 	private final int row;
@@ -19,6 +21,7 @@ public class Square {
 		return !isEmpty() && piece.getSide() == side;
 	}
 
+	@JsonIgnore
 	public boolean isEmpty() {
 		return piece == null;
 	}

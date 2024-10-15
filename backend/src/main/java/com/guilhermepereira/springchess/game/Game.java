@@ -22,6 +22,10 @@ public class Game {
 		return board.playMove(move);
 	}
 
+	public boolean undoLastMove() {
+		return board.undoLastMove();
+	}
+
 	public Board getBoard() {
 		return board;
 	}

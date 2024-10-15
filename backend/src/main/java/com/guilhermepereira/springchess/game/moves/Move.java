@@ -1,12 +1,16 @@
 package com.guilhermepereira.springchess.game.moves;
 
 import com.guilhermepereira.springchess.game.Board;
+import com.guilhermepereira.springchess.game.Piece;
 import com.guilhermepereira.springchess.game.Square;
 
 public class Move {
 	protected final Square originalSquare;
 	protected final Square targetSquare;
 	private final MoveType type;
+
+	private boolean wasOriginalPieceAlreadyMoved;
+	private Piece capturedPiece;
 
 	public Move(Square originalSquare, Square targetSquare) {
 		this(originalSquare, targetSquare, MoveType.NORMAL);
@@ -19,7 +23,15 @@ public class Move {
 	}
 
 	public void execute(Board board) {
+		wasOriginalPieceAlreadyMoved = originalSquare.getPiece().getHasMoved();
+		capturedPiece = targetSquare.getPiece();
 		board.movePiece(originalSquare.getPiece(), targetSquare);
+	}
+
+	public void undo(Board board) {
+		board.movePiece(targetSquare.getPiece(), originalSquare);
+		board.placePiece(capturedPiece, targetSquare);
+		originalSquare.getPiece().setHasMoved(wasOriginalPieceAlreadyMoved);
 	}
 
 	public boolean isNormalMove() {

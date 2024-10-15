@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
 
@@ -86,5 +85,19 @@ class BoardTest {
 		assertTrue(board.getSquare("d5").getPiece().isKnight());
 		assertTrue(board.getSquare("f4").getPiece().isWhite());
 		assertTrue(board.getSquare("f4").getPiece().isKnight());
+	}
+
+	@Test
+	@DisplayName("Testing if can't make move that would lead king being checked")
+	public void shouldNotDoMoveThatWouldCheckKing() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("e5"));
+		assertTrue(board.playMove("Nc3"));
+		assertTrue(board.playMove("Qh4"));
+		assertFalse(board.playMove("f3"));
+		assertFalse(board.playMove("f4"));
+
+		assertTrue(board.getSquare("f2").getPiece().isWhite());
+		assertTrue(board.getSquare("f2").getPiece().isPawn());
 	}
 }

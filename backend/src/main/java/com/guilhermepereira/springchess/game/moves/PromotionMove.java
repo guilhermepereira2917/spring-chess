@@ -5,6 +5,7 @@ import com.guilhermepereira.springchess.game.*;
 public class PromotionMove extends Move {
 
 	private final PieceType piecePromotionType;
+	private Piece promotedPawn;
 
 	public PromotionMove(Square originalSquare, Square targetSquare, PieceType piecePromotionType) {
 		super(originalSquare, targetSquare, MoveType.PROMOTION);
@@ -15,14 +16,26 @@ public class PromotionMove extends Move {
 	public void execute(Board board) {
 		super.execute(board);
 
-		Piece promotionPawn = getTargetSquare().getPiece();
-		board.removePiece(getTargetSquare().getPiece());
+		promotedPawn = targetSquare.getPiece();
+		board.removePiece(promotedPawn);
 
-		Piece newPiece = PieceFactory.createPieceFromPieceType(board, targetSquare, promotionPawn.getSide(), piecePromotionType);
+		Piece newPiece = PieceFactory.createPieceFromPieceType(board, targetSquare, promotedPawn.getSide(), piecePromotionType);
 		board.addPiece(newPiece);
 
 		targetSquare.setPiece(newPiece);
-		promotionPawn.setSquare(null);
+		promotedPawn.setSquare(null);
+	}
+
+	@Override
+	public void undo(Board board) {
+		Piece promotedPiece = targetSquare.getPiece();
+
+		super.undo(board);
+
+		board.removePiece(promotedPiece);
+		promotedPiece.setSquare(null);
+
+		board.placePiece(promotedPawn, originalSquare);
 	}
 
 	@Override

@@ -13,5 +13,7 @@ class MovesGeneratorTest {
 		var movesGenerator = new MovesGenerator();
 
 		assertEquals(20, movesGenerator.getNumberOfMoves(1));
+		assertEquals(400, movesGenerator.getNumberOfMoves(2));
+		assertEquals(8902, movesGenerator.getNumberOfMoves(3));
 	}
 }

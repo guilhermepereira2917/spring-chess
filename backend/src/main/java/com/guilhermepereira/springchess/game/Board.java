@@ -1,11 +1,9 @@
 package com.guilhermepereira.springchess.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.guilhermepereira.springchess.game.moves.Move;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Board {
 
@@ -15,6 +13,11 @@ public class Board {
 
 	private PieceSide turnSide;
 	private Square enPassantSquare;
+
+	@JsonIgnore
+	private Stack<Move> playedMoves;
+	@JsonIgnore
+	private Stack<Square> enPassantSquares;
 
 	public void initialize() {
 		initialize(fenStringInitialPosition);
@@ -28,6 +31,9 @@ public class Board {
 		placePieces(stringInfo[0]);
 		turnSide = stringInfo[1].equals("w") ? PieceSide.WHITE : PieceSide.BLACK;
 		enPassantSquare = null;
+
+		playedMoves = new Stack<>();
+		enPassantSquares = new Stack<>();
 	}
 
 	private void placePieces(String piecesPositionString) {
@@ -83,13 +89,34 @@ public class Board {
 			return false;
 		}
 
+		enPassantSquares.add(enPassantSquare);
+
 		Move executableMove = piece.getMove(move);
 		executableMove.execute(this);
 
-		turnSide = turnSide == PieceSide.WHITE ? PieceSide.BLACK : PieceSide.WHITE;
+		playedMoves.add(executableMove);
+
+		turnSide = turnSide.getOtherSide();
 		if (!executableMove.isPawnDoubleSquareMove()) {
 			enPassantSquare = null;
 		}
+
+		if (isKingInCheck(turnSide.getOtherSide())) {
+			undoLastMove();
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean undoLastMove() {
+		if (playedMoves.isEmpty() || enPassantSquares.isEmpty()) {
+			return false;
+		}
+
+		playedMoves.pop().undo(this);
+		enPassantSquare = enPassantSquares.pop();
+		turnSide = turnSide.getOtherSide();
 
 		return true;
 	}
@@ -113,12 +140,36 @@ public class Board {
 		removePiece(piece);
 	}
 
+	public void placePiece(Piece piece, Square targetSquare) {
+		if (piece == null) {
+			return;
+		}
+
+		targetSquare.setPiece(piece);
+		piece.setSquare(targetSquare);
+		addPiece(piece);
+	}
+
 	public void addPiece(Piece piece) {
 		pieces.computeIfAbsent(piece.getSide(), k -> new HashMap<>()).computeIfAbsent(piece.getType(), k -> new ArrayList<>()).add(piece);
 	}
 
 	public void removePiece(Piece piece) {
 		pieces.get(piece.getSide()).get(piece.getType()).remove(piece);
+	}
+
+	private boolean isKingInCheck(PieceSide side) {
+		return isPieceAttacked(getKing(side));
+	}
+
+	private boolean isPieceAttacked(Piece piece) {
+		for (Piece enemyPiece : getAllSidePieces(piece.getSide().getOtherSide())) {
+			if (enemyPiece.canMakeMove(piece.getSquare())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public Square getSquare(int row, int column) {
@@ -135,22 +186,33 @@ public class Board {
 		return squares[coordinates[0]][coordinates[1]];
 	}
 
-	public List<? extends Move> getAllCurrentSideMoves() {
-		return getAllCurrentSidePieces().stream().map(Piece::getValidMoves).flatMap(List::stream).toList();
+	private Piece getKing(PieceSide side) {
+		return pieces.get(side).get(PieceType.KING).getFirst();
 	}
 
-	public List<Piece> getAllCurrentSidePieces() {
-		return pieces.get(turnSide).values().stream().flatMap(List::stream).toList();
+	@JsonIgnore
+	public List<? extends Move> getAllCurrentSideMoves() {
+		return getAllSideMoves(turnSide);
+	}
+
+	private List<? extends Move> getAllSideMoves(PieceSide side) {
+		return getAllSidePieces(side).stream().map(Piece::getValidMoves).flatMap(List::stream).toList();
+	}
+
+	private List<Piece> getAllSidePieces(PieceSide side) {
+		return pieces.get(side).values().stream().flatMap(List::stream).toList();
 	}
 
 	public List<Piece> getAllCurrentSidePiecesOfType(PieceType type) {
 		return pieces.get(turnSide).get(type);
 	}
 
+	@JsonIgnore
 	public boolean isWhiteTurn() {
 		return turnSide == PieceSide.WHITE;
 	}
 
+	@JsonIgnore
 	public boolean isBlackTurn() {
 		return turnSide == PieceSide.BLACK;
 	}
@@ -161,6 +223,10 @@ public class Board {
 
 	public void setSquares(Square[][] squares) {
 		this.squares = squares;
+	}
+
+	public PieceSide getTurnSide() {
+		return turnSide;
 	}
 
 	public Square getEnPassantSquare() {

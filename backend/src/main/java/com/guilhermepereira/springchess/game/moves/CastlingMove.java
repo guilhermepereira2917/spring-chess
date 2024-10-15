@@ -19,4 +19,11 @@ public class CastlingMove extends Move {
 		super.execute(board);
 		board.movePiece(rookInitialSquare.getPiece(), rookTargetSquare);
 	}
+
+	@Override
+	public void undo(Board board) {
+		super.undo(board);
+		board.movePiece(rookTargetSquare.getPiece(), rookInitialSquare);
+		rookInitialSquare.getPiece().setHasMoved(false);
+	}
 }
