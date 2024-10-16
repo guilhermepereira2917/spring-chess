@@ -4,28 +4,46 @@ import com.guilhermepereira.springchess.game.moves.Move;
 
 public class MovesGenerator {
 
+	private final boolean logging;
 	private final Board board = new Board();
-	private int movesCount;
+	private int initialDepth;
 
-	public int getNumberOfMoves(int depth) {
-		board.initialize();
-		movesCount = 0;
-
-		countNumberOfMoves(depth);
-		return movesCount;
+	public MovesGenerator() {
+		this(false);
 	}
 
-	private void countNumberOfMoves(int remainingDepth) {
+	public MovesGenerator(boolean logging) {
+		this.logging = logging;
+	}
+
+	public long getNumberOfPossiblePositions(int depth) {
+		board.initialize();
+		initialDepth = depth;
+
+		return countNumberOfPossiblePositions(depth);
+	}
+
+	private long countNumberOfPossiblePositions(int remainingDepth) {
 		if (remainingDepth == 0) {
-			movesCount++;
-			return;
+			return 1;
 		}
 
+		long positionsCount = 0L;
 		for (Move possibleMove : board.getAllCurrentSideMoves()) {
-			if (board.playMove(possibleMove)) {
-				countNumberOfMoves(remainingDepth - 1);
-				board.undoLastMove();
+			if (!board.playMove(possibleMove)) {
+				continue;
 			}
+
+			long possiblePositions = countNumberOfPossiblePositions(remainingDepth - 1);
+			if (logging && remainingDepth == initialDepth) {
+				System.out.printf("%s: %s\n", possibleMove.getLongAlgebraicNotationRepresentation(), possiblePositions);
+			}
+
+			positionsCount += possiblePositions;
+
+			board.undoLastMove();
 		}
+
+		return positionsCount;
 	}
 }

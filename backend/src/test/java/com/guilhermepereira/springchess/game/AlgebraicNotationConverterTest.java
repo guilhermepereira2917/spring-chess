@@ -1,45 +1,35 @@
 package com.guilhermepereira.springchess.game;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AlgebraicNotationConverterTest {
 
-	@Test
-	@DisplayName("Testing if algebraic coordinate a8 returns coordinates {0, 0}")
-	public void shouldReturnCoordinates0And0ForSquareA8() {
-		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate("a8");
+	@ParameterizedTest
+	@MethodSource("getCoordinatesTestCases")
+	@DisplayName("Testing if are converted to algebraic notation and back correctly")
+	public void shouldConvertCoordinatesToAndBackFromAlgebraicNotation(String algebraicCoordinate, int[] expectedCoordinates) {
+		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate(algebraicCoordinate);
+		assertArrayEquals(coordinates, expectedCoordinates);
 
-		assertEquals(0, coordinates[0]);
-		assertEquals(0, coordinates[1]);
+		String reconvertedAlgebraicCoordinate = AlgebraicNotationConverter.convertToAlgebraicCoordinate(coordinates[0], coordinates[1]);
+		assertEquals(algebraicCoordinate, reconvertedAlgebraicCoordinate);
 	}
 
-	@Test
-	@DisplayName("Testing if algebraic coordinate a1 returns coordinates {7, 0}")
-	public void shouldReturnCoordinates7And0ForSquareA1() {
-		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate("a1");
-
-		assertEquals(7, coordinates[0]);
-		assertEquals(0, coordinates[1]);
-	}
-
-	@Test
-	@DisplayName("Testing if algebraic coordinate h1 returns coordinates {7, 7}")
-	public void shouldReturnCoordinates7And7ForSquareH1() {
-		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate("h1");
-
-		assertEquals(7, coordinates[0]);
-		assertEquals(7, coordinates[1]);
-	}
-
-	@Test
-	@DisplayName("Testing if algebraic coordinate h8 returns coordinates {0, 7}")
-	public void shouldReturnCoordinates0And7ForSquareH8() {
-		int[] coordinates = AlgebraicNotationConverter.convertAlgebraicCoordinate("h8");
-
-		assertEquals(0, coordinates[0]);
-		assertEquals(7, coordinates[1]);
+	private static Stream<Arguments> getCoordinatesTestCases() {
+		return Stream.of(
+			Arguments.of("a8", new int[]{0, 0}),
+			Arguments.of("a1", new int[]{7, 0}),
+			Arguments.of("h1", new int[]{7, 7}),
+			Arguments.of("h8", new int[]{0, 7}),
+			Arguments.of("f7", new int[]{1, 5})
+		);
 	}
 }

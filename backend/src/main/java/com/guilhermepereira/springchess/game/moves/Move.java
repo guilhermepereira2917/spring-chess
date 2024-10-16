@@ -34,6 +34,10 @@ public class Move {
 		originalSquare.getPiece().setHasMoved(wasOriginalPieceAlreadyMoved);
 	}
 
+	public String getLongAlgebraicNotationRepresentation() {
+		return originalSquare.getAlgebraicNotation() + targetSquare.getAlgebraicNotation();
+	}
+
 	public boolean isNormalMove() {
 		return type == MoveType.NORMAL;
 	}

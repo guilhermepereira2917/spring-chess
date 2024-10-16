@@ -146,4 +146,16 @@ public abstract class AlgebraicNotationConverter {
 	private static int convertAlgebraicColumn(Character algebraicColumn) {
 		return algebraicColumn - 'a';
 	}
+
+	public static String convertToAlgebraicCoordinate(int row, int column) {
+		return convertColumnToAlgebraicCoordinate(column) + convertRowToAlgebraicCoordinate(row);
+	}
+
+	private static String convertRowToAlgebraicCoordinate(int row) {
+		return String.valueOf(8 - row);
+	}
+
+	private static String convertColumnToAlgebraicCoordinate(int column) {
+		return String.valueOf((char) (column + (int) 'a'));
+	}
 }

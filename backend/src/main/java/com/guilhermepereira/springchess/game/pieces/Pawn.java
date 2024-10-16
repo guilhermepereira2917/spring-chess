@@ -34,14 +34,16 @@ public class Pawn extends Piece {
 			column += direction[1];
 
 			Square candidateSquare = board.getSquare(row, column);
-			if (candidateSquare.isEmpty()) {
-				if (isPromotionMove(row)) {
-					moves.addAll(createPromotionMoves(candidateSquare));
-				} else if (i == 0) {
-					moves.add(createMove(candidateSquare));
-				} else {
-					moves.add(createDoubleSquareMove(candidateSquare, board.getSquare(row - direction[0], column)));
-				}
+			if (!candidateSquare.isEmpty()) {
+				break;
+			}
+
+			if (isPromotionMove(row)) {
+				moves.addAll(createPromotionMoves(candidateSquare));
+			} else if (i == 0) {
+				moves.add(createMove(candidateSquare));
+			} else {
+				moves.add(createDoubleSquareMove(candidateSquare, board.getSquare(row - direction[0], column)));
 			}
 		}
 

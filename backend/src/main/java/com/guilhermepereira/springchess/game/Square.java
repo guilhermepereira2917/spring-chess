@@ -26,6 +26,11 @@ public class Square {
 		return piece == null;
 	}
 
+	@JsonIgnore
+	public String getAlgebraicNotation() {
+		return AlgebraicNotationConverter.convertToAlgebraicCoordinate(row, column);
+	}
+
 	public int getRow() {
 		return row;
 	}
