@@ -13,6 +13,7 @@ public class Board {
 
 	private PieceSide turnSide;
 	private Square enPassantSquare;
+	private GameResultEnum gameResult;
 
 	@JsonIgnore
 	private Stack<Move> playedMoves;
@@ -76,6 +77,14 @@ public class Board {
 	}
 
 	public boolean playMove(Move move) {
+		return playMove(move, true);
+	}
+
+	public boolean playMove(Move move, boolean validateCheckmate) {
+		if (gameResult != null) {
+			return false;
+		}
+
 		if (move.getOriginalSquare().isEmpty()) {
 			return false;
 		}
@@ -85,18 +94,16 @@ public class Board {
 			return false;
 		}
 
-		if (!piece.canMakeMove(move.getTargetSquare())) {
+		Move executableMove = piece.getMove(move);
+		if (executableMove == null) {
 			return false;
 		}
 
 		enPassantSquares.add(enPassantSquare);
-
-		Move executableMove = piece.getMove(move);
 		executableMove.execute(this);
-
 		playedMoves.add(executableMove);
-
 		turnSide = turnSide.getOtherSide();
+
 		if (!executableMove.isPawnDoubleSquareMove()) {
 			enPassantSquare = null;
 		}
@@ -104,6 +111,10 @@ public class Board {
 		if (isKingInCheck(turnSide.getOtherSide())) {
 			undoLastMove();
 			return false;
+		}
+
+		if (validateCheckmate && isCheckMate()) {
+			gameResult = turnSide == PieceSide.WHITE ? GameResultEnum.BLACK_WINS : GameResultEnum.WHITE_WINS;
 		}
 
 		return true;
@@ -156,6 +167,21 @@ public class Board {
 
 	public void removePiece(Piece piece) {
 		pieces.get(piece.getSide()).get(piece.getType()).remove(piece);
+	}
+
+	private boolean isCheckMate() {
+		if (!isKingInCheck(turnSide)) {
+			return false;
+		}
+
+		for (Move move : getAllCurrentSideMoves()) {
+			if (playMove(move, false)) {
+				undoLastMove();
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private boolean isKingInCheck(PieceSide side) {
@@ -235,5 +261,9 @@ public class Board {
 
 	public void setEnPassantSquare(Square enPassantSquare) {
 		this.enPassantSquare = enPassantSquare;
+	}
+
+	public GameResultEnum getGameResult() {
+		return gameResult;
 	}
 }

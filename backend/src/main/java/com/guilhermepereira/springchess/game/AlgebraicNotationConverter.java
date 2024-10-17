@@ -39,6 +39,8 @@ public abstract class AlgebraicNotationConverter {
 			}
 		} else if (isPieceMovement(algebraicMove)) {
 			algebraicMove = algebraicMove.replace("x", "");
+			algebraicMove = algebraicMove.replace("+", "");
+			algebraicMove = algebraicMove.replace("#", "");
 
 			Integer disambiguationRow = null;
 			if (hasDisambiguationRow(algebraicMove)) {

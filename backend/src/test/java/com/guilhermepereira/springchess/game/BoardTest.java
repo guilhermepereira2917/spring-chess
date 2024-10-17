@@ -100,4 +100,16 @@ class BoardTest {
 		assertTrue(board.getSquare("f2").getPiece().isWhite());
 		assertTrue(board.getSquare("f2").getPiece().isPawn());
 	}
+
+	@Test
+	@DisplayName("Testing if checkmate is finishing the game")
+	public void shouldFinishTheGameOnCheckmate() {
+		assertTrue(board.playMove("e4"));
+		assertTrue(board.playMove("g5"));
+		assertTrue(board.playMove("Nc3"));
+		assertTrue(board.playMove("f5"));
+		assertTrue(board.playMove("Qh5#"));
+
+		assertEquals(GameResultEnum.WHITE_WINS, board.getGameResult());
+	}
 }
