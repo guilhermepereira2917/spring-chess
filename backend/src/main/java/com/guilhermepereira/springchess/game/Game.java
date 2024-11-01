@@ -4,7 +4,7 @@ import com.guilhermepereira.springchess.game.moves.Move;
 
 public class Game {
 
-	private final Board board = new Board();
+	protected final Board board = new Board();
 
 	public void initialize() {
 		board.initialize();

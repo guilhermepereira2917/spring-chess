@@ -16,9 +16,9 @@ public class Board {
 	private GameResultEnum gameResult;
 
 	@JsonIgnore
-	private Stack<Move> playedMoves;
+	private List<Move> playedMoves;
 	@JsonIgnore
-	private Stack<Square> enPassantSquares;
+	private List<Square> enPassantSquares;
 
 	public void initialize() {
 		initialize(fenStringInitialPosition);
@@ -33,8 +33,8 @@ public class Board {
 		turnSide = stringInfo[1].equals("w") ? PieceSide.WHITE : PieceSide.BLACK;
 		enPassantSquare = null;
 
-		playedMoves = new Stack<>();
-		enPassantSquares = new Stack<>();
+		playedMoves = new ArrayList<>();
+		enPassantSquares = new ArrayList<>();
 	}
 
 	private void placePieces(String piecesPositionString) {
@@ -74,6 +74,13 @@ public class Board {
 	public boolean playMove(String algebraicMove) {
 		Move move = AlgebraicNotationConverter.convertAlgebraicMove(this, algebraicMove);
 		return move != null && playMove(move);
+	}
+
+	public boolean playUCIEngineMove(String UCIEngineMoveRepresentation) {
+		Square originalSquare = getSquare(UCIEngineMoveRepresentation.substring(0, 2));
+		Square targetSquare = getSquare(UCIEngineMoveRepresentation.substring(2, 4));
+
+		return playMove(new Move(originalSquare, targetSquare));
 	}
 
 	public boolean playMove(Move move) {
@@ -125,8 +132,12 @@ public class Board {
 			return false;
 		}
 
-		playedMoves.pop().undo(this);
-		enPassantSquare = enPassantSquares.pop();
+		playedMoves.getLast().undo(this);
+		playedMoves.removeLast();
+
+		enPassantSquare = enPassantSquares.getLast();
+		enPassantSquares.removeLast();
+
 		turnSide = turnSide.getOtherSide();
 
 		return true;
@@ -265,5 +276,9 @@ public class Board {
 
 	public GameResultEnum getGameResult() {
 		return gameResult;
+	}
+
+	public List<Move> getPlayedMoves() {
+		return playedMoves;
 	}
 }

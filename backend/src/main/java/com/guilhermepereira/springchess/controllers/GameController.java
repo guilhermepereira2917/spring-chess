@@ -2,6 +2,8 @@ package com.guilhermepereira.springchess.controllers;
 
 import com.guilhermepereira.springchess.dtos.MoveDto;
 import com.guilhermepereira.springchess.game.Game;
+import com.guilhermepereira.springchess.game.engines.EngineGame;
+import com.guilhermepereira.springchess.game.engines.StockfishEngine;
 import com.guilhermepereira.springchess.game.moves.Move;
 import com.guilhermepereira.springchess.game.Square;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("game")
 public class GameController {
 
-	private final Game game = new Game();
+	private final Game game = new EngineGame(new StockfishEngine());
 
 	public GameController() {
 		game.initialize();
