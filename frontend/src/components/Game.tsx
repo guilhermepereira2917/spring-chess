@@ -1,10 +1,11 @@
 import GameModel from "@/models/game/gameModel";
+import MoveModel from "@/models/game/moveModel";
 import SquareModel from "@/models/game/squareModel";
 import gameService from "@/services/gameService";
 import { QueryClient, useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import Square from "./Square";
-import MoveModel from "@/models/game/moveModel";
+import GameFinishDialog from "./GameFinishDialog";
 
 export default function Game(): ReactNode {
   const [firstSelectedSquare, setFirstSelectedSquare] = useState<SquareModel | null>(null);
@@ -31,6 +32,10 @@ export default function Game(): ReactNode {
   }
 
   const handleSquareClicked = (square: SquareModel): void => {
+    if (game.board.gameResult || playMoveMutation.isPending) {
+      return;
+    }
+
     if (!firstSelectedSquare) {
       if (!square.piece) {
         return;
@@ -53,15 +58,17 @@ export default function Game(): ReactNode {
     };
 
     playMoveMutation.mutate(move);
-
     setFirstSelectedSquare(null);
   }
 
   return (
-    <div className="grid grid-cols-8 grid-rows-8 w-[800px]">
-      {game.board.squares.flat().map((square: SquareModel): ReactNode => {
-        return <Square isSquareSelected={square == firstSelectedSquare} square={square} handleSquareClicked={handleSquareClicked} />
-      })}
-    </div>
+    <>
+      <div className="grid grid-cols-8 grid-rows-8 w-[800px]">
+        {game.board.squares.flat().map((square: SquareModel, index: number): ReactNode => {
+          return <Square key={index} isSquareSelected={square == firstSelectedSquare} square={square} handleSquareClicked={handleSquareClicked} />
+        })}
+      </div>
+      <GameFinishDialog game={game} />
+    </>
   );
 };
